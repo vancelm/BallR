@@ -16,7 +16,7 @@ pivot_game_data <- function(df, home = TRUE) {
     home_away <- "away"
   }
 
-  # first we create a new dataframe and store the columns that are the same
+  # first we create a new dataframe using the columns that are the same
   # for both the home and away team.
   new_df <- df[c("season_id",
                  "season_type",
