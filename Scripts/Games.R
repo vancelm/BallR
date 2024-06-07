@@ -1,21 +1,3 @@
-# Adds a column to the dataframe using naming conventions specific
-#  to the game.csv file. This just makes the code easier to use since
-#  there's a pattern with the naming of columns "_away" and "_home"
-#
-# The function returns the dataframe since R unfortunately doesn't
-# support passing by reference
-add_column <- function(df, new_df, column, home_away) {
-  # adds a new column to new_df using the base column name only.
-  # paste() concatenates two strings with a separator.
-  # column is the base column name, such as "fga" (field goals attempted)
-  # home_away should be either "home" or "away"
-  #
-  # The concatenated string is used to create the correct column name
-  # used in the original CSV/dataframe
-  new_df[column] <- df[paste(column, home_away, sep = "_")]
-  return(new_df)
-}
-
 # This function essentially takes all the _home and _away columns
 # and pivots them to separate rows with a new column called home_away
 # home_away will have a value of either "home" or "away"
@@ -45,33 +27,38 @@ pivot_game_data <- function(df, home = TRUE) {
   # next we add a home_away column, and set the value to our variable home_away
   new_df$home_away <- home_away
 
-  # now we simply add all the columns from the original dataframe to our new
-  # dataframe using our add_column function that also takes care of the name
-  # changes
-  new_df <- add_column(df, new_df, "team_id", home_away)
-  new_df <- add_column(df, new_df, "team_abbreviation", home_away)
-  new_df <- add_column(df, new_df, "team_name", home_away)
-  new_df <- add_column(df, new_df, "matchup", home_away)
-  new_df <- add_column(df, new_df, "wl", home_away)
-  new_df <- add_column(df, new_df, "fgm", home_away)
-  new_df <- add_column(df, new_df, "fga", home_away)
-  new_df <- add_column(df, new_df, "fg_pct", home_away)
-  new_df <- add_column(df, new_df, "fg3m", home_away)
-  new_df <- add_column(df, new_df, "fg3a", home_away)
-  new_df <- add_column(df, new_df, "fg3_pct", home_away)
-  new_df <- add_column(df, new_df, "ftm", home_away)
-  new_df <- add_column(df, new_df, "fta", home_away)
-  new_df <- add_column(df, new_df, "ft_pct", home_away)
-  new_df <- add_column(df, new_df, "oreb", home_away)
-  new_df <- add_column(df, new_df, "dreb", home_away)
-  new_df <- add_column(df, new_df, "reb", home_away)
-  new_df <- add_column(df, new_df, "ast", home_away)
-  new_df <- add_column(df, new_df, "stl", home_away)
-  new_df <- add_column(df, new_df, "blk", home_away)
-  new_df <- add_column(df, new_df, "tov", home_away)
-  new_df <- add_column(df, new_df, "pf", home_away)
-  new_df <- add_column(df, new_df, "pts", home_away)
-  new_df <- add_column(df, new_df, "plus_minus", home_away)
+  # Vector of base column names
+  columns <- c("team_id",
+               "team_abbreviation",
+               "team_name",
+               "matchup",
+               "wl",
+               "fgm",
+               "fga",
+               "fg_pct",
+               "fg3m",
+               "fg3a",
+               "fg3_pct",
+               "ftm",
+               "fta",
+               "ft_pct",
+               "oreb",
+               "dreb",
+               "reb",
+               "ast",
+               "stl",
+               "blk",
+               "tov",
+               "pf",
+               "pts",
+               "plus_minus")
+
+  # Now we simply loop through all the columns from the original dataframe to
+  # our new dataframe and handle while dropping the "_home" or "_away" part of
+  # the name.
+  for (i in seq_along(columns)) {
+    new_df[columns[i]] <- df[paste(columns[i], home_away, sep = "_")]
+  }
 
   # finally, we return our new dataframe
   return(new_df)
