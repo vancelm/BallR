@@ -29,9 +29,9 @@ pivot_game_data <- function(df, home = TRUE) {
   # if false we'll use "away"
   # Rather than hardcoding, this lets us use the same code for everything
   if (home) {
-    home_away = "home"
+    home_away <- "home"
   } else {
-    home_away = "away"
+    home_away <- "away"
   }
 
   # first we create a new dataframe and store the columns that are the same
