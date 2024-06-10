@@ -18,11 +18,14 @@ pivot_game_data <- function(df, home = TRUE) {
 
   # first we create a new dataframe using the columns that are the same
   # for both the home and away team.
-  new_df <- df[c("season_id",
-                 "season_type",
-                 "game_id",
-                 "game_date",
-                 "min")]
+  # Also, split up the date into separate year, month, day columns
+  new_df <- data.frame(season_id = df$season_id,
+                       season_type = df$season_type,
+                       game_id = df$game_id,
+                       year = as.numeric(substring(df$game_date, 1, 4)),
+                       month = as.numeric(substring(df$game_date, 6, 7)),
+                       day = as.numeric(substring(df$game_date, 9, 10)),
+                       min = df$min)
 
   # next we add a home_away column, and set the value to our variable home_away
   new_df$home_away <- home_away
@@ -91,3 +94,19 @@ read_game_data <- function(omit = TRUE) {
 # Simply calls the read_game_data() function which handles all the dirty
 # work of getting our data in more useable format ready for analysis
 df <- read_game_data()
+
+
+regular_season <- subset(df, (season_type == "Regular Season") & (year >= 2000))
+aggregate <- aggregate(list(fg3m = regular_season$fg3m,
+                            fg3a = regular_season$fg3a),
+                       list(year = regular_season$year,
+                            home_away = regular_season$home_away),
+                       sum)
+aggregate$fg3pct <- aggregate$fg3m / aggregate$fg3a
+
+home <- subset(aggregate, home_away == "home")
+away <- subset(aggregate, home_away == "away")
+
+plot(x = home$year, y = home$fg3pct, col = "red", type = "b",
+     ylim = c(min(aggregate$fg3pct), max(aggregate$fg3pct)))
+lines(x = away$year, y = away$fg3pct, col = "blue", type = "b")
