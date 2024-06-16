@@ -95,30 +95,43 @@ read_game_data <- function(omit = TRUE) {
 # work of getting our data in more useable format ready for analysis
 df <- read_game_data()
 
-
+# Filter out all but regular season games from the year 2000 on
 regular_season <- subset(df, (season_type == "Regular Season") & (year >= 2000))
+
+# calculate aggregates for each team for each year
+#  This means team A in 2000 is different from team A in 2002
 aggregate <- aggregate(list(fg3m = regular_season$fg3m,
                             fg3a = regular_season$fg3a),
                        list(year = regular_season$year,
                             team = regular_season$team_abbreviation,
                             home_away = regular_season$home_away),
                        sum)
+
+# recalulate the 3-point shooting percentage for each team/year
 aggregate$fg3pct <- aggregate$fg3m / aggregate$fg3a
+
+# so we can look at home and away separately.
+#  This may seem silly since we put them all together, but that step made
+#  further analysis much easier.
 home <- subset(aggregate, home_away == "home")
 away <- subset(aggregate, home_away == "away")
 
+# create a vector containing the difference for each team/year (they are
+#  already sorted by team and year, so we don't need to sort first).
 diff <- home$fg3pct - away$fg3pct
 
-
-
+# create a histogram showing the home/away pct diff
 hist(diff, probability = TRUE,
      breaks = "FD",
      col = "#00d9ff",
      main = "Difference Between Home and Away 3-Point Shooting (2000-2023)",
      xlab = "Shot Percentge Difference",
      ylab = "frequency")
+
+# Add a line showing the estimated probability density function
 lines(density(diff), col = "red", lwd = 3)
 
+# Output several summary statistcs
 summary(aggregate$fg3pct)
 sd(aggregate$fg3pct)
 summary(home$fg3pct)
@@ -127,6 +140,9 @@ summary(away$fg3pct)
 sd(away$fg3pct)
 summary(diff)
 sd(diff)
+
+# Perform a two-sample (not-paired) t-test
+#  based on testing, the same conclusion is drawn with a paired t-test
 t.test(x = home$fg3pct,
        y = away$fg3pct,
        paired = FALSE)
