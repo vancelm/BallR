@@ -57,7 +57,7 @@ pivot_game_data <- function(df, home = TRUE) {
                "plus_minus")
 
   # Now we simply loop through all the columns from the original dataframe to
-  # our new dataframe and handle while dropping the "_home" or "_away" part of
+  # our new dataframe and handle dropping the "_home" or "_away" part of
   # the name.
   for (i in seq_along(columns)) {
     new_df[columns[i]] <- df[paste(columns[i], home_away, sep = "_")]
