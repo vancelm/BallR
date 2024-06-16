@@ -100,13 +100,33 @@ regular_season <- subset(df, (season_type == "Regular Season") & (year >= 2000))
 aggregate <- aggregate(list(fg3m = regular_season$fg3m,
                             fg3a = regular_season$fg3a),
                        list(year = regular_season$year,
+                            team = regular_season$team_abbreviation,
                             home_away = regular_season$home_away),
                        sum)
 aggregate$fg3pct <- aggregate$fg3m / aggregate$fg3a
-
 home <- subset(aggregate, home_away == "home")
 away <- subset(aggregate, home_away == "away")
 
-plot(x = home$year, y = home$fg3pct, col = "red", type = "b",
-     ylim = c(min(aggregate$fg3pct), max(aggregate$fg3pct)))
-lines(x = away$year, y = away$fg3pct, col = "blue", type = "b")
+diff <- home$fg3pct - away$fg3pct
+
+
+
+hist(diff, probability = TRUE,
+     breaks = "FD",
+     col = "#00d9ff",
+     main = "Difference Between Home and Away 3-Point Shooting (2000-2023)",
+     xlab = "Shot Percentge Difference",
+     ylab = "frequency")
+lines(density(diff), col = "red", lwd = 3)
+
+summary(aggregate$fg3pct)
+sd(aggregate$fg3pct)
+summary(home$fg3pct)
+sd(home$fg3pct)
+summary(away$fg3pct)
+sd(away$fg3pct)
+summary(diff)
+sd(diff)
+t.test(x = home$fg3pct,
+       y = away$fg3pct,
+       paired = FALSE)
