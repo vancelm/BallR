@@ -6,6 +6,15 @@
 # but we can still group them separately for aggregate functions by the
 # home_away column and/or other categorical columns such as season_id, date,
 # season_type, etc
+#
+# Here's a simplified example of what is being done:
+#
+# Original: col1_home, col2_home, col3_home, col1_away, col2_away, col3_away
+#           23,        45,        13,        20,        43,        12
+# Pivot: home_away, col1, col2, col3
+#        "home",    23,   45,   13
+#        "away",    20,   43,   12
+#
 pivot_game_data <- function(df, home = TRUE) {
   # if home is set to TRUE we'll use "home"
   # if false we'll use "away"
