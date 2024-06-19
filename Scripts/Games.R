@@ -39,7 +39,7 @@ pivot_game_data <- function(df, home = TRUE) {
   # next we add a home_away column, and set the value to our variable home_away
   new_df$home_away <- home_away
 
-  # Vector of base column names
+  # Vector of base column names (without _home or _away)
   columns <- c("team_id",
                "team_abbreviation",
                "team_name",
@@ -68,6 +68,7 @@ pivot_game_data <- function(df, home = TRUE) {
   # Now we simply loop through all the columns from the original dataframe to
   # our new dataframe and handle dropping the "_home" or "_away" part of
   # the name.
+  # seq_along is just a nice way to handle situations like no data
   for (i in seq_along(columns)) {
     new_df[columns[i]] <- df[paste(columns[i], home_away, sep = "_")]
   }
